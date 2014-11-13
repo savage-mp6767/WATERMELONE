@@ -4,6 +4,17 @@
 
 import socket
 import sys
+import entities
+
+#game client class. represents the client, not the player object.
+class WMSClient:
+    def __init__(self,connection,ip):
+        self.connection = connection
+        self.ipaddr = ip
+        print '%s connected' % self.ipaddr
+
+    def SetName(self,name):
+        self.netname = name
 
 class WMServer:
     def __init__(self):
