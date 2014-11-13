@@ -8,40 +8,33 @@ from Tkinter import *
 
 root = Tk()
 
-class WMCNetworking():
-    def __init__(self):
-        #server connection
-        self.server_addr = ('localhost',12347)
-        self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.connection.connect(self.server_addr)
-        print 'connected to' + str(self.server_addr)
-        
-    def NetUpdate(self):
-        print 'receiving net message'
-        while True:
-            content = self.connection.recv(1024)
-            if not content:
-                break
-            else:
-                print content
-
 class MyApp:
     def __init__(self, parent):
-        #UI elements
         self.drawpad = Canvas(root, width=480,height=320, background='white') #TODO: width and height based on user-set options. (config.cfg?)
+        self.server_addr = ('localhost',12342)
+        self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connection.connect(self.server_addr)
         self.myParent = parent  
         self.myContainer1 = Frame(parent)
         self.myContainer1.pack()
         self.drawpad.pack(side=BOTTOM)
-        
-        self.Network = WMCNetworking()
-        
-        #begin update loop
-        self.Update()
     
     def Update(self):
-        #update network stuff
-        self.Network.NetUpdate()
+        try:
+            message = 'This is the message.  It will be repeated.'
+            print 'sending ' + message
+            self.connection.send(message)
+            # Look for the response
+            amount_received = 0
+            amount_expected = len(message)
+            while amount_received < amount_expected:
+                data = self.connection.recv(16)
+                amount_received += len(data)
+                print 'received ' + data
+        finally:
+            print 'closing socket'
+            self.connection.close()
+        self.Update()
 		
 myapp = MyApp(root)
 root.mainloop()
